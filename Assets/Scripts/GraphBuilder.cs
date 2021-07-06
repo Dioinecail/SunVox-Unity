@@ -116,11 +116,33 @@ public class GraphBuilder : MonoBehaviour
             SunvoxNodeBase newNode = target.AddNode<SunvoxNodeBase>();
             newNode.name = projectModules[i].name;
             newNode.position = projectModules[i].position;
+
+            if (projectModules[i].numOutputs == null || projectModules[i].numInputs == null)
+                continue;
+
+            int moduleFlags = SunVox.sv_get_module_flags(0, i);
+            int Number_of_inputs = (moduleFlags & SunVox.SV_MODULE_INPUTS_MASK) >> SunVox.SV_MODULE_INPUTS_OFF;
+            int Number_of_outputs = (moduleFlags & SunVox.SV_MODULE_OUTPUTS_MASK) >> SunVox.SV_MODULE_OUTPUTS_OFF;
+
+
+            Debug.Log($"Number_of_inputs: {projectModules[i].name} [{Number_of_inputs}]");
+            Debug.Log($"Number_of_outputs: {projectModules[i].name} [{Number_of_outputs}]");
+
+            for (int output = 0; output < projectModules[i].numOutputs.Length; output++)
+            {
+                //IntPtr ptr = IntPtr.Zero;
+                //Marshal.StructureToPtr(projectModules[i].numOutputs[output], ptr, false);
+
+                //int index = Marshal.ReadInt32(ptr);
+                //Debug.Log($"index : {index}");
+                Debug.Log($"outputs {projectModules[i].name} [{output}:{projectModules[i].numOutputs[output] & SunVox.SV_MODULE_OUTPUTS_MASK}");
+            }
+
         }
 
         for (int i = 0; i < projectModules.Length; i++)
         {
-            if (projectModules[i].numOutputs == null)
+            if (projectModules[i].numOutputs == null || projectModules[i].numInputs == null)
                 continue;
 
             SunvoxNodeBase node = target.nodes[i] as SunvoxNodeBase;
