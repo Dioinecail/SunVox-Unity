@@ -7,6 +7,8 @@
 
 	public class SunvoxNodeBase : Node
 	{
+        public string[] ctrlNames;
+
 		[Input]
 		public NodePort inputPort;
 		[Output]

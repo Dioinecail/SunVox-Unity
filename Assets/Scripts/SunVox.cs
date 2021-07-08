@@ -219,7 +219,8 @@ public class SunVox {
   /*
   */
   [DllImport (LIBRARY_NAME)] public static extern int sv_get_number_of_modules( int slot );
-  [DllImport (LIBRARY_NAME)] public static extern int sv_get_module_flags( int slot, int mod_num ); /* SV_MODULE_FLAG_xxx */
+  [DllImport (LIBRARY_NAME)] public static extern int sv_find_module( int slot , string name);
+    [DllImport (LIBRARY_NAME)] public static extern int sv_get_module_flags( int slot, int mod_num ); /* SV_MODULE_FLAG_xxx */
 
   /*
     sv_get_module_inputs(), sv_get_module_outputs() - 
@@ -227,8 +228,8 @@ public class SunVox {
     Number of inputs = ( module_flags & SV_MODULE_INPUTS_MASK ) >> SV_MODULE_INPUTS_OFF.
     Number of outputs = ( module_flags & SV_MODULE_OUTPUTS_MASK ) >> SV_MODULE_OUTPUTS_OFF.
   */
-  [DllImport (LIBRARY_NAME)] public static extern int[] sv_get_module_inputs( int slot, int mod_num );
-  [DllImport (LIBRARY_NAME)] public static extern int[] sv_get_module_outputs( int slot, int mod_num );
+  [DllImport (LIBRARY_NAME)] public static extern IntPtr sv_get_module_inputs( int slot, int mod_num );
+  [DllImport (LIBRARY_NAME)] public static extern IntPtr sv_get_module_outputs( int slot, int mod_num );
 
   /*
   */
