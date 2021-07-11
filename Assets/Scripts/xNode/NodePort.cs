@@ -300,8 +300,9 @@ namespace XNode {
                 }
             }
             // Trigger OnRemoveConnection
-            node.OnRemoveConnection(this);
-            if (port != null && port.IsConnectedTo(this)) port.node.OnRemoveConnection(port);
+            node.OnRemoveConnection(this, port);
+            if (port != null) 
+                port.node.OnRemoveConnection(this, port);
         }
 
         /// <summary> Disconnect this port from another port </summary>
@@ -315,8 +316,9 @@ namespace XNode {
             connections.RemoveAt(i);
 
             // Trigger OnRemoveConnection
-            node.OnRemoveConnection(this);
-            if (otherPort != null) otherPort.node.OnRemoveConnection(otherPort);
+            node.OnRemoveConnection(this, otherPort);
+            if (otherPort != null) 
+                otherPort.node.OnRemoveConnection(this, otherPort);
         }
 
         public void ClearConnections() {

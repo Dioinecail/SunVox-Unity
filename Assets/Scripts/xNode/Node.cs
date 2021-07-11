@@ -253,9 +253,9 @@ namespace XNode {
         /// <param name="from">Output</param> <param name="to">Input</param>
         public virtual void OnCreateConnection(NodePort from, NodePort to) { }
 
-        /// <summary> Called after a connection is removed from this port </summary>
-        /// <param name="port">Output or Input</param>
-        public virtual void OnRemoveConnection(NodePort port) { }
+        /// <summary> Called after a connection is removed from two <see cref="NodePort"/>s</summary>
+        /// <param name="from">Output</param> <param name="to">Input</param>
+        public virtual void OnRemoveConnection(NodePort from, NodePort to) { }
 
         /// <summary> Disconnect everything from this node </summary>
         public void ClearConnections() {

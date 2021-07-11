@@ -129,19 +129,19 @@ public class SunVox {
   */
   [DllImport (LIBRARY_NAME)] public static extern int sv_open_slot( int slot );
   [DllImport (LIBRARY_NAME)] public static extern int sv_close_slot( int slot );
-  [DllImport (LIBRARY_NAME)] public static extern int sv_lock_slot( int slot );
-  [DllImport (LIBRARY_NAME)] public static extern int sv_unlock_slot( int slot );
+    [DllImport(LIBRARY_NAME)] public static extern int sv_lock_slot(int slot);
+    [DllImport(LIBRARY_NAME)] public static extern int sv_unlock_slot(int slot);
 
-  /*
-    sv_load(), sv_load_from_memory() - 
-    load SunVox project from the file or from the memory block.
-  */
-  [DllImport (LIBRARY_NAME)] public static extern int sv_load( int slot, string name );
-  [DllImport (LIBRARY_NAME)] public static extern int sv_load_from_memory( int slot, byte[] data, int data_size );
+    /*
+      sv_load(), sv_load_from_memory() - 
+      load SunVox project from the file or from the memory block.
+    */
+    [DllImport (LIBRARY_NAME)] public static extern int sv_load( int slot, string name );
+    [DllImport (LIBRARY_NAME)] public static extern int sv_load_from_memory( int slot, byte[] data, int data_size );
 
-  /*
-  */
-  [DllImport (LIBRARY_NAME)] public static extern int sv_play( int slot );
+    /*
+    */
+    [DllImport (LIBRARY_NAME)] public static extern int sv_play( int slot );
   [DllImport (LIBRARY_NAME)] public static extern int sv_play_from_beginning( int slot );
   [DllImport (LIBRARY_NAME)] public static extern int sv_stop( int slot );
 
@@ -178,7 +178,7 @@ public class SunVox {
       ctl_val: value of controller or effect.
   */
   [DllImport (LIBRARY_NAME)] public static extern int sv_send_event( int slot, int track_num, int note, int vel, int module, int ctl, int ctl_val );
-
+    [DllImport(LIBRARY_NAME)] public static extern int sv_set_event_t(int slot, int set, int t);
   /*
   */
   [DllImport (LIBRARY_NAME)] public static extern int sv_get_current_line( int slot ); /* Get current line number */
@@ -228,8 +228,8 @@ public class SunVox {
     Number of inputs = ( module_flags & SV_MODULE_INPUTS_MASK ) >> SV_MODULE_INPUTS_OFF.
     Number of outputs = ( module_flags & SV_MODULE_OUTPUTS_MASK ) >> SV_MODULE_OUTPUTS_OFF.
   */
-  [DllImport (LIBRARY_NAME)] public static extern IntPtr sv_get_module_inputs( int slot, int mod_num );
-  [DllImport (LIBRARY_NAME)] public static extern IntPtr sv_get_module_outputs( int slot, int mod_num );
+  [DllImport (LIBRARY_NAME)] public static unsafe extern int* sv_get_module_inputs( int slot, int mod_num );
+  [DllImport (LIBRARY_NAME)] public static unsafe extern int* sv_get_module_outputs( int slot, int mod_num );
 
   /*
   */
