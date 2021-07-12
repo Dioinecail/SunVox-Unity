@@ -6,16 +6,47 @@ using System;
 using System.Runtime.InteropServices;
 using XNode;
 
+public class SunvoxCtrl
+{
+    public string name;
+    public int Value
+    {
+        get => _value;
+        set
+        {
+            _value = Mathf.Max(0, value);
+
+            SunVox.sv_set_event_t(0, 1, 0);
+            SunVox.sv_send_event(0, 0, 0, 0, moduleIndex + 1, (index + 1) << 8, _value);
+        }
+    }
+
+    private int index = -1;
+    private int _value = -1;
+    private int moduleIndex;
+
+
+
+    public SunvoxCtrl(int moduleIndex, int index, string name, int value)
+    {
+        this.moduleIndex = moduleIndex;
+        this.index = index;
+        this._value = value;
+        this.name = name;
+    }
+}
+
 [Serializable]
 public class SunvoxModule
 {
     public int index;
     public string name;
-    public int numControllers;
+    public SunvoxCtrl[] controllers;
     public List<int> inputs;
     public List<int> outputs;
     public int posX, posY;
     public Vector2 position { get => new Vector2(posX * 2, posY * 2); }
+    public Color tint;
     public SunvoxNodeBase targetNode;
 }
 
@@ -92,7 +123,7 @@ public class GraphBuilder : MonoBehaviour
         SunVox.sv_send_event(0, 0, 0, 0, 02 + 1, 01 << 8, value);
     }
 
-    private void UnloadSunvoxProject()
+    public void UnloadSunvoxProject()
     {
         if (!enabled)
             return;
@@ -148,8 +179,30 @@ public class GraphBuilder : MonoBehaviour
         module.name = moduleName;
         module.posX = x;
         module.posY = y;
+        int color = SunVox.sv_get_module_color(0, numModule); 
+        int r = color & 0xFF;           //r = 0...255
+        int g = (color >> 8) & 0xFF;  //g = 0...255
+        int b = (color >> 16) & 0xFF; //b = 0...255
 
-        if(inputsCount > 0)
+        module.tint = new Color32((byte)r, (byte)g, (byte)b, (byte)255);
+
+        int numCtrls = SunVox.sv_get_number_of_module_ctls(0, numModule);
+
+        module.controllers = new SunvoxCtrl[numCtrls];
+
+        for (int i = 0; i < numCtrls; i++)
+        {
+            IntPtr ctrlNamePtr = SunVox.sv_get_module_ctl_name(0, numModule, i);
+
+            int index = i;
+            string ctrlName = Marshal.PtrToStringAnsi(ctrlNamePtr);
+            int value = SunVox.sv_get_module_ctl_value(0, numModule, index, 1);
+
+            SunvoxCtrl ctrl  = new SunvoxCtrl(numModule, index, ctrlName, (value & 0xCCEE));
+            module.controllers[i] = ctrl;
+        }
+
+        if (inputsCount > 0)
         {
             module.inputs = new List<int>();
 
@@ -191,17 +244,6 @@ public class GraphBuilder : MonoBehaviour
             newNode.name = projectModules[i].name;
             newNode.position = projectModules[i].position;
             projectModules[i].targetNode = newNode;
-
-            //int numCtrls = SunVox.sv_get_number_of_module_ctls(0, i);
-
-            //string[] ctrlNames = new string[numCtrls];
-
-            //for (int x = 0; x < numCtrls; x++)
-            //{
-            //    IntPtr ctrlNamePtr = SunVox.sv_get_module_ctl_name(0, i, x);
-            //    ctrlNames[x] = Marshal.PtrToStringAnsi(ctrlNamePtr);
-            //}
-            //newNode.ctrlNames = ctrlNames;
         }
 
         for (int i = 0; i < projectModules.Length; i++)
@@ -218,9 +260,9 @@ public class GraphBuilder : MonoBehaviour
                     int connectionIndex = projectModules[i].inputs[x];
 
                     SunvoxNodeBase connectedNode = projectModules[connectionIndex].targetNode;
-                    NodePort port = connectedNode.GetOutputPort("outputPort");
+                    NodePort port = connectedNode.GetOutputPort("output");
 
-                    port.Connect(node.GetInputPort("inputPort"));
+                    port.Connect(node.GetInputPort("input"));
                 }
             }
         }

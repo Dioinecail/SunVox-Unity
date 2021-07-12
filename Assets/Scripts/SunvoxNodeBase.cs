@@ -6,6 +6,7 @@
 	using UnityEngine;
 	using XNode;
 
+    [NodeWidth(150)]
 	public class SunvoxNodeBase : Node
 	{
 		public event Action<int, int> onConnected;
@@ -13,10 +14,10 @@
 
 		public SunvoxModule TargetModule { get; private set; }
 
-		[Input]
-		public SunvoxNodeBase inputPort;
-		[Output]
-		public SunvoxNodeBase outputPort;
+		[Input(backingValue = ShowBackingValue.Never)]
+		public SunvoxNodeBase input;
+		[Output(backingValue = ShowBackingValue.Never)]
+		public SunvoxNodeBase output;
 
 
 
@@ -41,6 +42,9 @@
 			SunvoxNodeBase nodeFrom = from.node as SunvoxNodeBase;
 			SunvoxNodeBase nodeTo = to.node as SunvoxNodeBase;
 
+            if (nodeFrom.TargetModule == null || nodeTo.TargetModule == null)
+                return;
+
 			int indexFrom = nodeFrom.TargetModule.index;
 			int indexTo = nodeTo.TargetModule.index;
 
@@ -52,7 +56,10 @@
 			SunvoxNodeBase nodeFrom = from.node as SunvoxNodeBase;
 			SunvoxNodeBase nodeTo = to.node as SunvoxNodeBase;
 
-			int indexFrom = nodeFrom.TargetModule.index;
+            if (nodeFrom.TargetModule == null || nodeTo.TargetModule == null)
+                return;
+
+            int indexFrom = nodeFrom.TargetModule.index;
 			int indexTo = nodeTo.TargetModule.index;
 
 			onDisconnected?.Invoke(indexFrom, indexTo);

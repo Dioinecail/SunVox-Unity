@@ -71,16 +71,21 @@ namespace XNodeEditor {
             // Iterate through serialized properties and draw them like the Inspector (But with ports)
             SerializedProperty iterator = serializedObject.GetIterator();
             bool enterChildren = true;
-            while (iterator.NextVisible(enterChildren)) {
+            while (iterator.NextVisible(enterChildren))
+            {
                 enterChildren = false;
-                if (excludes.Contains(iterator.name)) continue;
+                if (excludes.Contains(iterator.name))
+                    continue;
+
                 NodeEditorGUILayout.PropertyField(iterator, true);
             }
 #endif
 
             // Iterate through dynamic ports and draw them in the order in which they are serialized
-            foreach (XNode.NodePort dynamicPort in target.DynamicPorts) {
-                if (NodeEditorGUILayout.IsDynamicPortListPort(dynamicPort)) continue;
+            foreach (XNode.NodePort dynamicPort in target.DynamicPorts)
+            {
+                if (NodeEditorGUILayout.IsDynamicPortListPort(dynamicPort))
+                    continue;
                 NodeEditorGUILayout.PortField(dynamicPort);
             }
 
@@ -99,21 +104,31 @@ namespace XNodeEditor {
 #endif
         }
 
-        public virtual int GetWidth() {
+        public virtual int GetWidth()
+        {
             Type type = target.GetType();
+
             int width;
-            if (type.TryGetAttributeWidth(out width)) return width;
-            else return 208;
+
+            if (type.TryGetAttributeWidth(out width))
+                return width;
+            else
+                return 208;
         }
 
         /// <summary> Returns color for target node </summary>
-        public virtual Color GetTint() {
+        public virtual Color GetTint()
+        {
             // Try get color from [NodeTint] attribute
             Type type = target.GetType();
             Color color;
-            if (type.TryGetAttributeTint(out color)) return color;
+
+            if (type.TryGetAttributeTint(out color))
+                return color;
+
             // Return default color (grey)
-            else return NodeEditorPreferences.GetSettings().tintColor;
+            else
+                return NodeEditorPreferences.GetSettings().tintColor;
         }
 
         public virtual GUIStyle GetBodyStyle() {

@@ -489,8 +489,9 @@ namespace XNodeEditor {
                 nodeEditor.OnBodyGUI();
 
                 //If user changed a value, notify other scripts through onUpdateNode
-                if (EditorGUI.EndChangeCheck()) {
-                    if (NodeEditor.onUpdateNode != null) NodeEditor.onUpdateNode(node);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    NodeEditor.onUpdateNode?.Invoke(node);
                     EditorUtility.SetDirty(node);
                     nodeEditor.serializedObject.ApplyModifiedProperties();
                 }
@@ -498,12 +499,14 @@ namespace XNodeEditor {
                 GUILayout.EndVertical();
 
                 //Cache data about the node for next frame
-                if (e.type == EventType.Repaint) {
+                if (e.type == EventType.Repaint)
+                {
                     Vector2 size = GUILayoutUtility.GetLastRect().size;
                     if (nodeSizes.ContainsKey(node)) nodeSizes[node] = size;
                     else nodeSizes.Add(node, size);
 
-                    foreach (var kvp in NodeEditor.portPositions) {
+                    foreach (var kvp in NodeEditor.portPositions)
+                    {
                         Vector2 portHandlePos = kvp.Value;
                         portHandlePos += node.position;
                         Rect rect = new Rect(portHandlePos.x - 8, portHandlePos.y - 8, 16, 16);
@@ -517,7 +520,13 @@ namespace XNodeEditor {
                     //Check if we are hovering this node
                     Vector2 nodeSize = GUILayoutUtility.GetLastRect().size;
                     Rect windowRect = new Rect(nodePos, nodeSize);
-                    if (windowRect.Contains(mousePos)) hoveredNode = node;
+                    if (windowRect.Contains(mousePos))
+                    {
+                        hoveredNode = node;
+
+                        if(IsDraggingPort)
+                            hoveredPort = node.Inputs.First();
+                    }
 
                     //If dragging a selection box, add nodes inside to selection
                     if (currentActivity == NodeActivity.DragGrid) {
@@ -526,18 +535,28 @@ namespace XNodeEditor {
 
                     //Check if we are hovering any of this nodes ports
                     //Check input ports
-                    foreach (XNode.NodePort input in node.Inputs) {
+                    foreach (XNode.NodePort input in node.Inputs)
+                    {
                         //Check if port rect is available
-                        if (!portConnectionPoints.ContainsKey(input)) continue;
+                        if (!portConnectionPoints.ContainsKey(input))
+                            continue;
+
                         Rect r = GridToWindowRectNoClipped(portConnectionPoints[input]);
-                        if (r.Contains(mousePos)) hoveredPort = input;
+
+                        if (r.Contains(mousePos))
+                            hoveredPort = input;
                     }
                     //Check all output ports
-                    foreach (XNode.NodePort output in node.Outputs) {
+                    foreach (XNode.NodePort output in node.Outputs)
+                    {
                         //Check if port rect is available
-                        if (!portConnectionPoints.ContainsKey(output)) continue;
+                        if (!portConnectionPoints.ContainsKey(output))
+                            continue;
+
                         Rect r = GridToWindowRectNoClipped(portConnectionPoints[output]);
-                        if (r.Contains(mousePos)) hoveredPort = output;
+
+                        if (r.Contains(mousePos))
+                            hoveredPort = output;
                     }
                 }
 

@@ -174,7 +174,7 @@ namespace XNodeEditor {
                                     if (NodeEditor.onUpdateNode != null) NodeEditor.onUpdateNode(node);
                                 }
                             }
-                        } else if (IsHoveringNode && IsHoveringTitle(hoveredNode)) {
+                        } else if (IsHoveringNode) {
                             // If mousedown on node header, select or deselect
                             if (!Selection.Contains(hoveredNode)) {
                                 SelectNode(hoveredNode, e.control || e.shift);
@@ -216,17 +216,25 @@ namespace XNodeEditor {
                 case EventType.MouseUp:
                     if (e.button == 0) {
                         //Port drag release
-                        if (IsDraggingPort) {
+                        if (IsDraggingPort)
+                        {
                             // If connection is valid, save it
-                            if (draggedOutputTarget != null && draggedOutput.CanConnectTo(draggedOutputTarget)) {
+                            if (draggedOutputTarget != null && draggedOutput.CanConnectTo(draggedOutputTarget))
+                            {
                                 XNode.Node node = draggedOutputTarget.node;
-                                if (graph.nodes.Count != 0) draggedOutput.Connect(draggedOutputTarget);
+
+                                if (graph.nodes.Count != 0)
+                                    draggedOutput.Connect(draggedOutputTarget);
 
                                 // ConnectionIndex can be -1 if the connection is removed instantly after creation
                                 int connectionIndex = draggedOutput.GetConnectionIndex(draggedOutputTarget);
-                                if (connectionIndex != -1) {
+
+                                if (connectionIndex != -1)
+                                {
                                     draggedOutput.GetReroutePoints(connectionIndex).AddRange(draggedOutputReroutes);
-                                    if (NodeEditor.onUpdateNode != null) NodeEditor.onUpdateNode(node);
+
+                                    NodeEditor.onUpdateNode?.Invoke(node);
+
                                     EditorUtility.SetDirty(graph);
                                 }
                             }

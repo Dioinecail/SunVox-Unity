@@ -1473,7 +1473,7 @@ GameObject:
   - component: {fileID: 1103168213}
   - component: {fileID: 1103168212}
   m_Layer: 5
-  m_Name: SetVolume(1)
+  m_Name: Close
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1496,7 +1496,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 396, y: -166.51987}
+  m_AnchoredPosition: {x: 149, y: 66}
   m_SizeDelta: {x: 210.28424, y: 77.51987}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1103168212
@@ -1543,8 +1543,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 658270621}
-        m_MethodName: DEBUG_SetConnectionState
-        m_Mode: 6
+        m_MethodName: UnloadSunvoxProject
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1626,7 +1626,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 66}
+  m_AnchoredPosition: {x: -151, y: 66}
   m_SizeDelta: {x: 210.28412, y: 77.51987}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1162723181
@@ -1776,7 +1776,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: SetVolume(0);
+  m_text: Unload project
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
