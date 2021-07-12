@@ -192,9 +192,6 @@ public class GraphBuilder : MonoBehaviour
             newNode.position = projectModules[i].position;
             projectModules[i].targetNode = newNode;
 
-            newNode.onConnected += OnNodeConnected;
-            newNode.onDisconnected += OnNodeDisconnected;
-
             //int numCtrls = SunVox.sv_get_number_of_module_ctls(0, i);
 
             //string[] ctrlNames = new string[numCtrls];
@@ -227,12 +224,21 @@ public class GraphBuilder : MonoBehaviour
                 }
             }
         }
+
+        for (int i = 0; i < projectModules.Length; i++)
+        {
+            if (projectModules[i] == null)
+                continue;
+
+            projectModules[i].targetNode.onConnected += OnNodeConnected;
+            projectModules[i].targetNode.onDisconnected += OnNodeDisconnected;
+        }
     }
 
     private void OnNodeConnected(int from, int to)
     {
-        //if (lastConnectedFrom == from && lastConnectedTo == to)
-        //    return;
+        if (lastConnectedFrom == from && lastConnectedTo == to)
+            return;
 
         SunVox.sv_lock_slot(0);
 
