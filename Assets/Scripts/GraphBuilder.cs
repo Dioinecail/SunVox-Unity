@@ -36,20 +36,6 @@ public class SunvoxCtrl
     }
 }
 
-[Serializable]
-public class SunvoxModule
-{
-    public int index;
-    public string name;
-    public SunvoxCtrl[] controllers;
-    public List<int> inputs;
-    public List<int> outputs;
-    public int posX, posY;
-    public Vector2 position { get => new Vector2(posX * 2, posY * 2); }
-    public Color tint;
-    public SunvoxNodeBase targetNode;
-}
-
 public class GraphBuilder : MonoBehaviour
 {
     public event Action onProjectLoaded;
@@ -57,7 +43,7 @@ public class GraphBuilder : MonoBehaviour
     public SunvoxGraph target;
     public bool loadOnStart;
 
-    private SunvoxModule[] projectModules;
+    private ModuleBase[] projectModules;
     private bool isInit;
     private int lastConnectedFrom, lastConnectedTo;
 
@@ -140,7 +126,7 @@ public class GraphBuilder : MonoBehaviour
         unsafe
         {
             int numModules = SunVox.sv_get_number_of_modules(0);
-            projectModules = new SunvoxModule[numModules];
+            projectModules = new ModuleBase[numModules];
 
             for (int i = 0; i < numModules; i++)
             {
@@ -149,10 +135,10 @@ public class GraphBuilder : MonoBehaviour
         }
     }
 
-    private unsafe SunvoxModule CreateSunvoxModule(int numModule)
+    // TODO: change module creation to return a specified module
+    // for example if you get Compressor, so that you return CompressorModule and not just a ModuleBase
+    private unsafe ModuleBase CreateSunvoxModule(int numModule)
     {
-        SunvoxModule module = new SunvoxModule();
-
         IntPtr namePtr = SunVox.sv_get_module_name(0, numModule);
         string moduleName = Marshal.PtrToStringAnsi(namePtr);
 
@@ -175,20 +161,18 @@ public class GraphBuilder : MonoBehaviour
         int* numInputsPtr = SunVox.sv_get_module_inputs(0, numModule);
         int* numOutputsPtr = SunVox.sv_get_module_outputs(0, numModule);
 
-        module.index = numModule;
-        module.name = moduleName;
-        module.posX = x;
-        module.posY = y;
         int color = SunVox.sv_get_module_color(0, numModule); 
         int r = color & 0xFF;           //r = 0...255
         int g = (color >> 8) & 0xFF;  //g = 0...255
         int b = (color >> 16) & 0xFF; //b = 0...255
 
-        module.tint = new Color32((byte)r, (byte)g, (byte)b, (byte)255);
+        Color tint = new Color32((byte)r, (byte)g, (byte)b, (byte)255);
 
         int numCtrls = SunVox.sv_get_number_of_module_ctls(0, numModule);
 
-        module.controllers = new SunvoxCtrl[numCtrls];
+        SunvoxCtrl[] controllers = new SunvoxCtrl[numCtrls];
+        List<int> inputs = new List<int>();
+        List<int> outputs = new List<int>();
 
         for (int i = 0; i < numCtrls; i++)
         {
@@ -199,34 +183,32 @@ public class GraphBuilder : MonoBehaviour
             int value = SunVox.sv_get_module_ctl_value(0, numModule, index, 1);
 
             SunvoxCtrl ctrl  = new SunvoxCtrl(numModule, index, ctrlName, (value & 0xCCEE));
-            module.controllers[i] = ctrl;
+            controllers[i] = ctrl;
         }
 
         if (inputsCount > 0)
         {
-            module.inputs = new List<int>();
-
             for (int i = 0; i < inputsCount; i++)
             {
                 int index = numInputsPtr[i];
 
                 if (index > -1)
-                    module.inputs.Add(index);
+                    inputs.Add(index);
             }
         }
 
         if(outputsCount > 0)
         {
-            module.outputs = new List<int>();
-
             for (int i = 0; i < outputsCount; i++)
             {
                 int index = numOutputsPtr[i];
 
                 if (index > -1)
-                    module.outputs.Add(index);
+                    outputs.Add(index);
             }
         }
+
+        ModuleBase module = new ModuleBase(numModule, moduleName, x, y, controllers, inputs, outputs, tint);
 
         return module;
     }
@@ -241,9 +223,9 @@ public class GraphBuilder : MonoBehaviour
             int index = i;
             SunvoxNodeBase newNode = target.AddNode<SunvoxNodeBase>();
             newNode.SetModule(projectModules[index]);
-            newNode.name = projectModules[i].name;
-            newNode.position = projectModules[i].position;
-            projectModules[i].targetNode = newNode;
+            newNode.name = projectModules[i].Name;
+            newNode.position = projectModules[i].GetPosition();
+            projectModules[i].TargetNode = newNode;
         }
 
         for (int i = 0; i < projectModules.Length; i++)
@@ -251,15 +233,15 @@ public class GraphBuilder : MonoBehaviour
             if (projectModules[i] == null)
                 continue;
 
-            SunvoxNodeBase node = projectModules[i].targetNode;
+            SunvoxNodeBase node = projectModules[i].TargetNode;
 
-            if (projectModules[i].inputs != null)
+            if (projectModules[i].Inputs != null)
             {
-                for (int x = 0; x < projectModules[i].inputs.Count; x++)
+                for (int x = 0; x < projectModules[i].Inputs.Count; x++)
                 {
-                    int connectionIndex = projectModules[i].inputs[x];
+                    int connectionIndex = projectModules[i].Inputs[x];
 
-                    SunvoxNodeBase connectedNode = projectModules[connectionIndex].targetNode;
+                    SunvoxNodeBase connectedNode = projectModules[connectionIndex].TargetNode;
                     NodePort port = connectedNode.GetOutputPort("output");
 
                     port.Connect(node.GetInputPort("input"));
@@ -272,8 +254,8 @@ public class GraphBuilder : MonoBehaviour
             if (projectModules[i] == null)
                 continue;
 
-            projectModules[i].targetNode.onConnected += OnNodeConnected;
-            projectModules[i].targetNode.onDisconnected += OnNodeDisconnected;
+            projectModules[i].TargetNode.onConnected += OnNodeConnected;
+            projectModules[i].TargetNode.onDisconnected += OnNodeDisconnected;
         }
     }
 

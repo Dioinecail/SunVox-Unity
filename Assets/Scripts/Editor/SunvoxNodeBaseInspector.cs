@@ -21,20 +21,20 @@
         {
             base.OnInspectorGUI();
 
-            if (node.TargetModule != null && node.TargetModule.controllers != null)
+            if (node.TargetModule != null && node.TargetModule.Controllers != null)
             {
                 ModuleGUI(node.TargetModule);
             }
         }
 
-        private void ModuleGUI(SunvoxModule targetModule)
+        private void ModuleGUI(ModuleBase targetModule)
         {
-            for (int i = 0; i < targetModule.controllers.Length; i++)
+            for (int i = 0; i < targetModule.Controllers.Length; i++)
             {
-                string ctrlName = targetModule.controllers[i].name;
-                int ctrlValue = targetModule.controllers[i].Value;
+                string ctrlName = targetModule.Controllers[i].name;
+                int ctrlValue = targetModule.Controllers[i].Value;
 
-                targetModule.controllers[i].Value = EditorGUILayout.IntSlider(ctrlName, ctrlValue, 0, 32768);
+                targetModule.Controllers[i].Value = EditorGUILayout.IntSlider(ctrlName, ctrlValue, 0, 32768);
             }
         }
     }

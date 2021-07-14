@@ -12,7 +12,7 @@
 		public event Action<int, int> onConnected;
 		public event Action<int, int> onDisconnected;
 
-		public SunvoxModule TargetModule { get; private set; }
+		public ModuleBase TargetModule { get; private set; }
 
 		[Input(backingValue = ShowBackingValue.Never)]
 		public SunvoxNodeBase input;
@@ -32,7 +32,7 @@
 			return null; // Replace this
 		}
 
-		public void SetModule(SunvoxModule module)
+		public void SetModule(ModuleBase module)
         {
 			TargetModule = module;
         }
@@ -45,8 +45,8 @@
             if (nodeFrom.TargetModule == null || nodeTo.TargetModule == null)
                 return;
 
-			int indexFrom = nodeFrom.TargetModule.index;
-			int indexTo = nodeTo.TargetModule.index;
+			int indexFrom = nodeFrom.TargetModule.Index;
+			int indexTo = nodeTo.TargetModule.Index;
 
 			onConnected?.Invoke(indexFrom, indexTo);
 		}
@@ -59,8 +59,8 @@
             if (nodeFrom.TargetModule == null || nodeTo.TargetModule == null)
                 return;
 
-            int indexFrom = nodeFrom.TargetModule.index;
-			int indexTo = nodeTo.TargetModule.index;
+            int indexFrom = nodeFrom.TargetModule.Index;
+			int indexTo = nodeTo.TargetModule.Index;
 
 			onDisconnected?.Invoke(indexFrom, indexTo);
 		}

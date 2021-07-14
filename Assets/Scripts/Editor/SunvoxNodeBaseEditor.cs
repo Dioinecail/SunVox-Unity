@@ -25,7 +25,7 @@
             tgtNode = target as SunvoxNodeBase;
 
             if (tgtNode.TargetModule != null)
-                return tgtNode.TargetModule.tint;
+                return tgtNode.TargetModule.Tint;
             else
                 return base.GetTint();
         }
